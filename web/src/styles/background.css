@@ -1,0 +1,312 @@
+/* 心事站 · 背景层
+   分层结构（从下到上）：
+   L0 .backdrop-base     静态底色渐变，任何降级场景都保证有背景
+   L1 .backdrop-aurora   极光团块，慢速漂移 + 鼠标视差
+   L2 .backdrop-beams    光束（仅华丽档）
+   L2 .backdrop-veil     暗角纱，把注意力收拢到内容区
+   L2 .backdrop-noise    极淡噪点，消除大面积渐变的色带
+   L3 .backdrop-stardust Canvas 星尘粒子（华丽/均衡档）
+
+   画质档位由 html[data-fx] 控制：lush / balanced / calm。
+   所有动画只改 transform 与 opacity，不触发重排。 */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-backdrop);
+  overflow: hidden;
+  pointer-events: none;
+  contain: layout paint style;
+}
+
+/* ── L0 底色 ── */
+
+.backdrop-base {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(1100px 520px at 14% -10%, var(--bg-glow-a), transparent 62%),
+    radial-gradient(880px 420px at 86% 2%, var(--bg-glow-b), transparent 58%),
+    linear-gradient(
+      168deg,
+      color-mix(in srgb, var(--bg) 94%, var(--primary)) 0%,
+      var(--bg) 46%,
+      color-mix(in srgb, var(--bg) 90%, var(--teal)) 100%
+    );
+}
+
+/* ── L1 极光 ── */
+
+.backdrop-aurora {
+  position: absolute;
+  inset: -18%;
+  display: block;
+  mix-blend-mode: var(--aurora-blend);
+  opacity: var(--aurora-opacity);
+  transform: translate3d(var(--px, 0px), var(--py, 0px), 0);
+  /* transform 由 JS 逐帧缓动写入，不做过渡；只过渡明度与饱和度 */
+  transition: opacity 900ms var(--ease), filter 900ms var(--ease);
+  will-change: transform;
+}
+
+/* 音乐播放时极光轻轻提亮，让画面随呼吸一起活着 */
+.backdrop[data-playing="true"] .backdrop-aurora {
+  opacity: calc(var(--aurora-opacity) * 1.14);
+  filter: saturate(1.22);
+}
+
+/* 发出心事 / 弹幕时的一次性辉光回应 */
+.backdrop[data-pulse="true"] .backdrop-aurora {
+  opacity: calc(var(--aurora-opacity) * 1.32);
+  filter: saturate(1.5) brightness(1.12);
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    var(--blob-color) 0%,
+    color-mix(in srgb, var(--blob-color) 46%, transparent) 44%,
+    transparent 100%
+  );
+  animation-name: var(--blob-anim, aurora-drift-a);
+  animation-duration: calc(var(--blob-dur, 52s) / var(--aurora-speed));
+  animation-delay: var(--blob-delay, 0s);
+  animation-timing-function: cubic-bezier(0.44, 0.02, 0.56, 0.98);
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  will-change: transform;
+}
+
+.blob-1 {
+  top: 1%;
+  left: 4%;
+  width: 48vw;
+  height: 40vw;
+  --blob-color: var(--aurora-1);
+  --blob-anim: aurora-drift-a;
+  --blob-dur: 47s;
+  --blob-delay: -6s;
+}
+
+.blob-2 {
+  top: 22%;
+  right: 2%;
+  width: 42vw;
+  height: 46vw;
+  --blob-color: var(--aurora-2);
+  --blob-anim: aurora-drift-b;
+  --blob-dur: 59s;
+  --blob-delay: -17s;
+}
+
+.blob-3 {
+  bottom: -8%;
+  left: 24%;
+  width: 54vw;
+  height: 44vw;
+  --blob-color: var(--aurora-3);
+  --blob-anim: aurora-drift-c;
+  --blob-dur: 71s;
+  --blob-delay: -29s;
+}
+
+/* 暖沙只做小面积点缀，防止整页冷调显得疏离 */
+.blob-4 {
+  top: 8%;
+  left: 42%;
+  width: 24vw;
+  height: 24vw;
+  --blob-color: var(--aurora-4);
+  --blob-anim: aurora-drift-b;
+  --blob-dur: 41s;
+  --blob-delay: -11s;
+}
+
+.blob-5 {
+  top: 48%;
+  left: 2%;
+  width: 36vw;
+  height: 32vw;
+  --blob-color: var(--aurora-2);
+  --blob-anim: aurora-drift-c;
+  --blob-dur: 83s;
+  --blob-delay: -38s;
+}
+
+@keyframes aurora-drift-a {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+  }
+  34% {
+    transform: translate3d(7vw, -5vh, 0) scale(1.15) rotate(26deg);
+  }
+  67% {
+    transform: translate3d(-5vw, 4vh, 0) scale(0.93) rotate(-16deg);
+  }
+  100% {
+    transform: translate3d(3vw, -2vh, 0) scale(1.07) rotate(9deg);
+  }
+}
+
+@keyframes aurora-drift-b {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1.04) rotate(0deg);
+  }
+  31% {
+    transform: translate3d(-8vw, 3vh, 0) scale(0.9) rotate(-22deg);
+  }
+  63% {
+    transform: translate3d(4vw, 7vh, 0) scale(1.18) rotate(14deg);
+  }
+  100% {
+    transform: translate3d(-3vw, -4vh, 0) scale(0.98) rotate(-7deg);
+  }
+}
+
+@keyframes aurora-drift-c {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.96) rotate(0deg);
+  }
+  29% {
+    transform: translate3d(6vw, 6vh, 0) scale(1.12) rotate(18deg);
+  }
+  58% {
+    transform: translate3d(-7vw, -3vh, 0) scale(0.9) rotate(-24deg);
+  }
+  100% {
+    transform: translate3d(2vw, 3vh, 0) scale(1.05) rotate(6deg);
+  }
+}
+
+/* ── L2 光束（仅华丽档）── */
+
+.backdrop-beams {
+  display: none;
+}
+
+:root[data-fx="lush"] .backdrop-beams {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: 160vmax;
+  height: 160vmax;
+  margin: -80vmax 0 0 -80vmax;
+  mix-blend-mode: var(--aurora-blend);
+  opacity: 0.42;
+  filter: blur(56px);
+  background: conic-gradient(
+    from 0deg,
+    transparent 0 11%,
+    color-mix(in srgb, var(--primary) 20%, transparent) 17%,
+    transparent 25% 45%,
+    color-mix(in srgb, var(--teal) 17%, transparent) 51%,
+    transparent 59% 78%,
+    color-mix(in srgb, var(--indigo) 14%, transparent) 84%,
+    transparent 92%
+  );
+  animation: beams-spin calc(150s / var(--aurora-speed)) linear infinite;
+  will-change: transform;
+}
+
+@keyframes beams-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── L2 暗角纱 ── */
+
+.backdrop-veil {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(132% 104% at 50% 2%, transparent 36%, var(--aurora-veil) 100%);
+}
+
+/* ── L2 噪点 ── */
+
+.backdrop-noise {
+  position: absolute;
+  inset: 0;
+  opacity: var(--glass-noise);
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+/* ── L3 星尘 ── */
+
+.backdrop-stardust {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0.9;
+}
+
+/* ── 画质档位降级 ── */
+
+:root[data-fx="calm"] .blob,
+:root[data-fx="calm"] .backdrop-beams {
+  animation-play-state: paused;
+}
+
+:root[data-fx="calm"] .backdrop-stardust {
+  display: none;
+}
+
+/* 均衡档只保留 4 个团块，省一层合成 */
+:root[data-fx="balanced"] .blob-5 {
+  display: none;
+}
+
+/* 系统级减弱动效：无论用户怎么选都强制静止，这是硬保证 */
+@media (prefers-reduced-motion: reduce) {
+  .blob,
+  .backdrop-beams {
+    animation-play-state: paused !important;
+  }
+
+  .backdrop-stardust {
+    display: none;
+  }
+
+  .backdrop-aurora {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* 窄屏：团块按视宽缩放，避免大尺寸模糊层拖垮移动端 */
+@media (max-width: 720px) {
+  .blob-1 {
+    width: 92vw;
+    height: 76vw;
+  }
+
+  .blob-2 {
+    width: 80vw;
+    height: 86vw;
+  }
+
+  .blob-3 {
+    width: 104vw;
+    height: 84vw;
+  }
+
+  .blob-4 {
+    width: 46vw;
+    height: 46vw;
+  }
+
+  .blob-5 {
+    display: none;
+  }
+
+  .backdrop-noise {
+    background-size: 140px 140px;
+  }
+}

@@ -1,0 +1,771 @@
+/* 各业务页面的布局与专属组件样式 */
+
+/* ── 广场首页 ── */
+
+/* 首页栅格分成两行：
+   第一行 = 标题与弹幕墙，横跨整个内容宽度
+   第二行 = 发布框与信息流（左） + 常用标签 → 热度榜 → 当前身份（右）
+   右侧栏与发布框同一行起头，热度榜因此停在「写下此刻的心事」右侧，
+   且不参与任何全局吸附或跟随滚动 */
+.home-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-areas:
+    'head head'
+    'main side';
+  align-items: start;
+  gap: var(--sp-6);
+}
+
+.home-head {
+  grid-area: head;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  min-width: 0;
+}
+
+.home-main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  min-width: 0;
+}
+
+.home-side {
+  grid-area: side;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  min-width: 0;
+}
+
+.feed-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+
+/* ── 心事详情 ── */
+
+.detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 420px;
+  align-items: start;
+  gap: var(--sp-6);
+}
+
+.detail-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  min-width: 0;
+}
+
+.detail-main > .card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-5);
+}
+
+.detail-side {
+  position: sticky;
+  top: calc(var(--topbar-h) + var(--sp-6));
+}
+
+.detail-side .comment-panel {
+  padding: var(--sp-5);
+}
+
+.back-btn {
+  align-self: flex-start;
+  margin-bottom: calc(-1 * var(--sp-1));
+}
+
+.detail-body {
+  margin-top: var(--sp-1);
+}
+
+.status-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--sp-3);
+  margin: 0;
+}
+
+.status-grid > div {
+  padding: var(--sp-3);
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.status-grid dt {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.status-grid dd {
+  margin: 3px 0 0;
+  font-size: 13px;
+}
+
+.auto-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
+}
+
+/* ── 热度榜 ── */
+
+.ranking-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.ranking-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  align-items: start;
+  gap: var(--sp-5);
+}
+
+.algo-card {
+  position: sticky;
+  top: calc(var(--topbar-h) + var(--sp-6));
+}
+
+.algo-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin: var(--sp-4) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.algo-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.rank-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: rank;
+}
+
+.rank-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  border-radius: var(--r-md);
+  border: 1px solid transparent;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+
+.rank-item:hover {
+  background: var(--surface-2);
+  border-color: var(--border);
+}
+
+.rank-no {
+  flex: none;
+  width: 26px;
+  padding-top: 2px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-faint);
+}
+
+.rank-no[data-top="true"] {
+  font-size: 15px;
+}
+
+.rank-text {
+  display: block;
+  font-size: 13px;
+  line-height: 1.7;
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.rank-item:hover .rank-text {
+  color: var(--primary-text);
+}
+
+.rank-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.rank-name {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rank-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.rank-stats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rank-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  padding: 3px var(--sp-2);
+  border-radius: var(--r-full);
+  border: 1px solid color-mix(in srgb, var(--sand) 34%, transparent);
+  color: var(--sand);
+  font-size: 12px;
+}
+
+.rank-compact .rank-item {
+  padding: var(--sp-2);
+}
+
+.rank-compact .rank-text {
+  -webkit-line-clamp: 1;
+}
+
+/* ── 音乐库 ── */
+
+.music-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.now-playing {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+  padding: var(--sp-6);
+}
+
+.now-cover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 108px;
+  height: 108px;
+  flex: none;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+}
+
+.now-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.now-title {
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.now-artist {
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.now-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-2);
+}
+
+.now-time {
+  flex: none;
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.now-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-3);
+}
+
+.upload-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.track-list {
+  display: flex;
+  flex-direction: column;
+  padding: var(--sp-2);
+}
+
+.track-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  padding: var(--sp-3);
+  border-radius: var(--r-md);
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.track-item:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.track-item[data-active="true"] {
+  background: var(--primary-soft);
+  border-color: color-mix(in srgb, var(--primary) 28%, transparent);
+  color: var(--text);
+}
+
+.track-index {
+  flex: none;
+  width: 24px;
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.track-title {
+  display: block;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.track-artist {
+  display: block;
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.track-state {
+  display: flex;
+  align-items: center;
+  flex: none;
+  color: var(--text-faint);
+}
+
+/* ── 我的心事 ── */
+
+.mine-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.profile-name {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.ban-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-md);
+  border: 1px solid color-mix(in srgb, var(--danger) 38%, transparent);
+  background: color-mix(in srgb, var(--danger) 9%, transparent);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.ban-banner svg {
+  color: var(--danger);
+  flex: none;
+  margin-top: 2px;
+}
+
+/* ── 站内信 ── */
+
+.notice-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.notice-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  transition: border-color var(--dur-fast) var(--ease);
+}
+
+.notice-row[data-unread="true"] {
+  border-color: color-mix(in srgb, var(--primary) 30%, transparent);
+  background: color-mix(in srgb, var(--primary) 5%, var(--surface));
+}
+
+.notice-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.notice-body {
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* ── 站内概览 ── */
+
+.overview-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--sp-4);
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-4) var(--sp-5);
+}
+
+/* 统计图标：不加底框，纯线条 SVG，颜色由卡片档位决定 */
+.stat-icon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-muted);
+}
+
+.stat-card[data-tone="primary"] .stat-icon {
+  color: var(--primary-text);
+}
+
+.stat-card[data-tone="teal"] .stat-icon {
+  color: var(--teal);
+}
+
+.stat-card[data-tone="sand"] .stat-icon {
+  color: var(--sand);
+}
+
+.stat-card[data-tone="slate"] .stat-icon {
+  color: var(--slate);
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.stat-value {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: var(--sp-5);
+}
+
+.dm-feed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  max-height: 560px;
+  overflow-y: auto;
+  padding-right: var(--sp-4);
+}
+
+.dm-feed-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+}
+
+.dm-feed-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-top: 7px;
+  border-radius: var(--r-full);
+  background: currentColor;
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 16%, transparent);
+}
+
+.dm-feed-text {
+  font-size: 13px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+  text-shadow: 0 0 9px color-mix(in srgb, currentColor 32%, transparent);
+}
+
+.dm-feed-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.dm-feed-link {
+  color: var(--text-muted);
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.dm-feed-link:hover {
+  color: var(--primary-text);
+}
+
+/* ── 个人信息 ── */
+
+.profile-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.avatar-editor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+  flex: none;
+}
+
+.avatar-editor-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  margin-top: var(--sp-4);
+}
+
+.profile-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--sp-4);
+}
+
+/* 提示文字跟在输入框下方左对齐：原来靠右会飘到远离字段的另一头，
+   一排字段时看起来像「没对齐」 */
+.field-hint {
+  align-self: stretch;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text-faint);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px var(--sp-2) 4px var(--sp-3);
+  border-radius: var(--r-full);
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, transparent);
+  background: var(--primary-soft);
+  color: var(--primary-text);
+  font-size: 12px;
+}
+
+.chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--r-full);
+  color: currentColor;
+  opacity: 0.7;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+
+.chip-remove:hover {
+  opacity: 1;
+}
+
+/* ── 设置 ── */
+
+.settings-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.setting-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  margin-top: var(--sp-4);
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+}
+
+.setting-text {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.setting-name {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.setting-desc {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.setting-control {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex: none;
+}
+
+.setting-range {
+  width: 180px;
+}
+
+.setting-value {
+  width: 42px;
+  font-size: 12px;
+  color: var(--text-faint);
+  text-align: right;
+}
+
+/* ── 响应式 ── */
+
+@media (max-width: 1280px) {
+  .detail-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .detail-side {
+    position: static;
+  }
+}
+
+@media (max-width: 1080px) {
+  .ranking-grid,
+  .overview-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* 窄屏收成单列：弹幕墙 → 发布框与信息流 → 常用标签/热度榜/当前身份 */
+  .home-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'head'
+      'main'
+      'side';
+  }
+
+  .algo-card {
+    position: static;
+  }
+}
+
+@media (max-width: 720px) {
+  .now-playing {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-4);
+    padding: var(--sp-5);
+  }
+
+  .now-cover {
+    width: 84px;
+    height: 84px;
+  }
+
+  .feed-toolbar {
+    align-items: stretch;
+  }
+
+  .setting-row {
+    align-items: flex-start;
+  }
+
+  .setting-control {
+    width: 100%;
+  }
+
+  .setting-range {
+    flex: 1;
+    width: auto;
+  }
+}

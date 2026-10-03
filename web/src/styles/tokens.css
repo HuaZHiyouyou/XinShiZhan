@@ -1,0 +1,194 @@
+/* 心事站 · 设计令牌
+   深色为默认主题，浅色通过 [data-theme="light"] 覆盖。
+   配色约定：雾蓝为主色，青碧与暖沙为辅色，中性灰承担结构。
+   禁止使用纯红、纯紫作为文字色；危险态仅出现在描边、图标与标签上。 */
+
+:root {
+  color-scheme: dark;
+
+  --bg: #0e1116;
+  --bg-glow-a: rgba(91, 141, 239, 0.16);
+  --bg-glow-b: rgba(63, 184, 175, 0.12);
+  --surface: #171d26;
+  --surface-2: #1e2632;
+  --surface-3: #26303d;
+  --surface-hover: #1c242f;
+
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  --text: #e6eaf0;
+  --text-muted: #98a3b3;
+  --text-faint: #6b7787;
+
+  --primary: #5b8def;
+  --primary-hover: #6f9cf3;
+  --primary-soft: rgba(91, 141, 239, 0.14);
+  --primary-text: #a9c6f7;
+
+  --teal: #3fb8af;
+  --sand: #d9a05b;
+  --sage: #8fbf7f;
+  --rose: #d98c93;
+  --indigo: #8a8fe0;
+  --slate: #93a5b8;
+  --amber: #d6b45c;
+  --danger: #c0564e;
+  --success: #4fa97c;
+  --warning: #c99a4e;
+
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 22px;
+  --r-full: 999px;
+
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.28);
+  --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.34);
+  --shadow-3: 0 18px 48px rgba(0, 0, 0, 0.44);
+
+  --font-sans: "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Consolas, monospace;
+
+  --dur-fast: 140ms;
+  --dur-base: 220ms;
+  --dur-slow: 380ms;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --topbar-h: 60px;
+  --rail-w: 216px;
+  /* 留言抽屉宽度：音乐悬浮栏的让位距离也读它，改一处即可 */
+  --drawer-w: 480px;
+
+  /* ── 极光背景层（L0–L2）──
+     团块颜色沿用雾蓝 / 青碧 / 靛蓝，暖沙只做极小面积点缀，避免抢走内容注意力。
+     --aurora-speed 是全局速度倍率：华丽档提速，静谧档暂停动画。 */
+  --aurora-1: rgba(91, 141, 239, 0.5);
+  --aurora-2: rgba(63, 184, 175, 0.4);
+  --aurora-3: rgba(138, 143, 224, 0.34);
+  --aurora-4: rgba(217, 160, 91, 0.14);
+  --aurora-blend: screen;
+  --aurora-opacity: 1;
+  --aurora-speed: 1;
+  --aurora-veil: rgba(5, 7, 11, 0.55);
+  --stardust: 214, 230, 255;
+  --stardust-alpha: 0.85;
+
+  /* ── 玻璃拟态（L5）──
+     glass-1 用于长列表内容卡：只半透明、不模糊，避免逐卡开启合成层。
+     glass-2/3 用于骨架与浮层：半透明 + backdrop-filter，数量需克制。 */
+  --glass-1: color-mix(in srgb, var(--surface) 56%, transparent);
+  --glass-2: color-mix(in srgb, var(--surface) 70%, transparent);
+  --glass-3: color-mix(in srgb, var(--surface) 80%, transparent);
+  --glass-blur-2: 14px;
+  --glass-blur-3: 20px;
+  --glass-saturate: 165%;
+  --glass-border: rgba(255, 255, 255, 0.11);
+  --glass-inner: inset 0 1px 0 rgba(255, 255, 255, 0.055);
+  --glass-rim: linear-gradient(
+    148deg,
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0.04) 34%,
+    rgba(255, 255, 255, 0) 58%,
+    rgba(255, 255, 255, 0.08)
+  );
+  --glass-noise: 0.05;
+
+  /*
+   * 层级约定（整站统一，改之前先读这段）：
+   *   --z-backdrop(-1)  星空背景，压在内容之下
+   *   内容              .app-body 保持 z-index: auto —— 一旦给它一个数值就会创建
+   *                     新的层叠上下文，页面内的弹窗会被困在里面、被顶栏盖住
+   *   --z-topbar(40)    悬浮顶栏
+   *   --z-drawer(45)    留言抽屉
+   *   --z-menu(60)      下拉菜单
+   *   --z-dock(70)      音乐悬浮球
+   *   --z-overlay(90)   弹窗遮罩（必须高于顶栏与悬浮球）
+   *   --z-lightbox(100) 图片灯箱
+   *   --z-toast(110)    全局提示（永远最上）
+   *   --z-popup(120)    日期选择等弹层（会出现在弹窗内部，需高于遮罩）
+   */
+  --z-backdrop: -1;
+  --z-topbar: 40;
+  --z-drawer: 45;
+  --z-menu: 60;
+  --z-dock: 70;
+  --z-overlay: 90;
+  --z-lightbox: 100;
+  --z-toast: 110;
+  --z-popup: 120;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f5f7fa;
+  --bg-glow-a: rgba(91, 141, 239, 0.12);
+  --bg-glow-b: rgba(63, 184, 175, 0.1);
+  --surface: #ffffff;
+  --surface-2: #f1f4f8;
+  --surface-3: #e7ecf3;
+  --surface-hover: #f7f9fc;
+
+  --border: rgba(18, 26, 38, 0.1);
+  --border-strong: rgba(18, 26, 38, 0.2);
+
+  --text: #1b2432;
+  --text-muted: #5b6779;
+  --text-faint: #8b96a6;
+
+  --primary: #3e71c8;
+  --primary-hover: #3564b4;
+  --primary-soft: rgba(62, 113, 200, 0.1);
+  --primary-text: #2b5599;
+
+  --teal: #2f9a92;
+  --sand: #b9823f;
+  --sage: #6d9c5e;
+  --rose: #c1707a;
+  --indigo: #6b70c9;
+  --slate: #71849a;
+  --amber: #b8933c;
+  --danger: #a8463f;
+  --success: #3c8a63;
+  --warning: #a8802f;
+
+  --shadow-1: 0 1px 2px rgba(20, 30, 45, 0.06);
+  --shadow-2: 0 8px 24px rgba(20, 30, 45, 0.09);
+  --shadow-3: 0 18px 44px rgba(20, 30, 45, 0.14);
+
+  /* 浅色下极光要更淡且改用正片叠底，否则整页发灰发白 */
+  --aurora-1: rgba(91, 141, 239, 0.3);
+  --aurora-2: rgba(63, 184, 175, 0.24);
+  --aurora-3: rgba(138, 143, 224, 0.2);
+  --aurora-4: rgba(217, 160, 91, 0.14);
+  --aurora-blend: multiply;
+  --aurora-opacity: 0.9;
+  --aurora-veil: rgba(255, 255, 255, 0.4);
+  --stardust: 96, 124, 172;
+  --stardust-alpha: 0.4;
+
+  --glass-1: color-mix(in srgb, var(--surface) 64%, transparent);
+  --glass-2: color-mix(in srgb, var(--surface) 76%, transparent);
+  --glass-3: color-mix(in srgb, var(--surface) 84%, transparent);
+  --glass-saturate: 150%;
+  --glass-border: rgba(18, 26, 38, 0.1);
+  --glass-inner: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  --glass-rim: linear-gradient(
+    148deg,
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 255, 255, 0.4) 34%,
+    rgba(255, 255, 255, 0) 58%,
+    rgba(255, 255, 255, 0.55)
+  );
+  --glass-noise: 0.035;
+}

@@ -1,0 +1,197 @@
+/* 弹幕墙：统一向左流动，多色板与四种光效 */
+
+.danmaku-card {
+  overflow: hidden;
+}
+
+.danmaku-stage {
+  position: relative;
+  margin: 0 var(--sp-4);
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background:
+    radial-gradient(600px 200px at 20% 0%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 70%),
+    radial-gradient(500px 180px at 80% 100%, color-mix(in srgb, var(--teal) 9%, transparent), transparent 70%),
+    color-mix(in srgb, var(--surface-2) 92%, transparent);
+  box-shadow: var(--glass-inner);
+  overflow: hidden;
+}
+
+.danmaku-fly {
+  position: absolute;
+  left: 100%;
+  white-space: nowrap;
+  will-change: transform;
+  animation-name: dm-fly;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+  animation-play-state: var(--dm-play, running);
+}
+
+.danmaku-stage[data-paused="true"] .danmaku-fly {
+  animation-play-state: paused;
+}
+
+@keyframes dm-fly {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-1 * var(--dm-distance, 900px)));
+  }
+}
+
+.dm-text {
+  position: relative;
+  display: inline-block;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  padding: 0 6px;
+  line-height: 24px;
+}
+
+/* 拖尾：文字后方渐隐的光带 */
+.dm-trace::after {
+  content: "";
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  width: 96px;
+  height: 2px;
+  border-radius: 2px;
+  transform: translateY(-50%);
+  background: linear-gradient(270deg, var(--dm-color), transparent 92%);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* 流光：文字表面流动的高光 */
+.dm-shimmer {
+  background-image: linear-gradient(
+    100deg,
+    var(--dm-color) 18%,
+    color-mix(in srgb, var(--dm-color) 30%, #ffffff) 42%,
+    var(--dm-color) 66%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  animation: dm-shimmer 2.6s linear infinite;
+}
+
+@keyframes dm-shimmer {
+  from {
+    background-position: 180% 0;
+  }
+  to {
+    background-position: -80% 0;
+  }
+}
+
+.danmaku-idle {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-faint);
+  font-size: 13px;
+}
+
+/* ── 弹幕发送区 ── */
+
+.danmaku-composer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-5) var(--sp-5);
+}
+
+.dm-input-row {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.dm-input-row .input {
+  flex: 1;
+}
+
+.dm-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-5);
+}
+
+.dm-option-group {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.dm-option-label {
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.dm-swatches {
+  display: flex;
+  gap: 6px;
+}
+
+.dm-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--r-full);
+  background: var(--dm-color);
+  border: 1px solid color-mix(in srgb, var(--dm-color) 60%, transparent);
+  box-shadow: 0 0 0 0 transparent;
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+
+.dm-swatch:hover {
+  transform: translateY(-1px);
+}
+
+.dm-swatch[data-active="true"] {
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 3px var(--dm-color);
+}
+
+.dm-effects {
+  display: flex;
+  gap: 6px;
+}
+
+.dm-effect-chip {
+  padding: 4px 10px;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 12px;
+  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease);
+}
+
+.dm-effect-chip:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.dm-effect-chip[data-active="true"] {
+  background: var(--primary-soft);
+  border-color: color-mix(in srgb, var(--primary) 42%, transparent);
+  color: var(--primary-text);
+}
+
+@media (max-width: 720px) {
+  .dm-options {
+    gap: var(--sp-3);
+  }
+
+  .dm-option-group {
+    width: 100%;
+  }
+}

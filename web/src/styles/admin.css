@@ -1,0 +1,882 @@
+/* 后台面板：看板、审批台、内容/用户管理、规则、日志 */
+
+/* ── 后台骨架 ── */
+
+.admin-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.admin-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  padding: var(--sp-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+
+.admin-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px var(--sp-3);
+  border-radius: var(--r-full);
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+.admin-tab:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.admin-tab.active {
+  background: var(--primary-soft);
+  border-color: color-mix(in srgb, var(--primary) 32%, transparent);
+  color: var(--primary-text);
+}
+
+.admin-body {
+  min-width: 0;
+}
+
+/* ── 数据看板 ── */
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+  gap: var(--sp-3);
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-4);
+  transition: border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+
+a.stat-card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+
+/* 统计图标：不加底框，纯线条 SVG，颜色由卡片档位决定 */
+.stat-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--r-full);
+  flex: none;
+}
+
+.trend-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-3);
+  height: 190px;
+  padding: var(--sp-2) 0;
+}
+
+.trend-col {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  height: 100%;
+}
+
+.trend-bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 3px;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+}
+
+.trend-bar {
+  flex: 1;
+  max-width: 16px;
+  min-height: 3px;
+  border-radius: 3px 3px 0 0;
+  opacity: 0.85;
+  transition: opacity var(--dur-fast) var(--ease), height var(--dur-slow) var(--ease);
+}
+
+.trend-bar:hover {
+  opacity: 1;
+}
+
+.trend-day {
+  font-size: 11px;
+  color: var(--text-faint);
+  flex: none;
+}
+
+.pending-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--sp-3);
+}
+
+.pending-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--sp-4);
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.pending-no {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.pending-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ── 审批台 ── */
+
+.review-head {
+  flex-wrap: wrap;
+}
+
+.review-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.review-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-5);
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+
+.review-item:hover {
+  background: var(--surface-hover);
+}
+
+.review-item[data-selectable="true"] {
+  cursor: pointer;
+}
+
+.review-item[data-selectable="true"]:focus-visible {
+  outline: none;
+  border-color: color-mix(in srgb, var(--primary) 62%, transparent);
+}
+
+.review-item[data-checked="true"],
+.review-item[data-checked="true"]:hover {
+  background: color-mix(in srgb, var(--primary) 13%, var(--surface-2));
+  border-color: color-mix(in srgb, var(--primary) 64%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 32%, transparent);
+}
+
+.review-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+  flex: none;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border-strong);
+  color: #fff;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+
+.review-item[data-checked="true"] .review-mark {
+  border-color: var(--primary);
+  background: var(--primary);
+}
+
+.review-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  font-size: 12px;
+}
+
+.review-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.review-content {
+  margin: var(--sp-2) 0 0;
+  font-size: 13px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.review-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+
+.review-images img {
+  width: 76px;
+  height: 76px;
+  object-fit: cover;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+}
+
+.review-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+
+.review-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  flex: none;
+}
+
+/* ── 内容 / 用户 / 举报列表 ── */
+
+.admin-search {
+  width: 240px;
+  height: 34px;
+  padding: 0 var(--sp-3);
+  flex: none;
+}
+
+.admin-search .input {
+  font-size: 13px;
+}
+
+.admin-select {
+  min-width: 132px;
+}
+
+.admin-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-5);
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.admin-row:hover {
+  background: var(--surface-hover);
+}
+
+/* ── 批量选择 ── */
+
+/* 勾选框：与审批台的 .review-mark 同一套视觉，只是它自己就是个按钮 */
+.select-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  flex: none;
+  padding: 0;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+
+.select-box:hover {
+  border-color: var(--primary);
+}
+
+.select-box[data-checked='true'] {
+  border-color: var(--primary);
+  background: var(--primary);
+}
+
+/* 选中的行整体提亮：一眼能看出这一批会被怎么处理 */
+.admin-row[data-checked='true'],
+.admin-row[data-checked='true']:hover {
+  background: color-mix(in srgb, var(--primary) 10%, var(--surface-2));
+}
+
+/*
+ * 批量操作条：跟在筛选行下面。
+ * 不画分割线 —— 用底色块把它和列表分开，比一条横线更清楚。
+ */
+.batch-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin: 0 var(--sp-5) var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--primary) 7%, transparent);
+}
+
+.batch-bar .batch-count {
+  margin-right: auto;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.admin-excerpt {
+  display: block;
+  margin-top: var(--sp-2);
+  font-size: 13px;
+  line-height: 1.7;
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.admin-excerpt:hover {
+  color: var(--primary-text);
+}
+
+.admin-stats {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+  margin-top: var(--sp-3);
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.admin-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  flex: none;
+}
+
+/* 待审头像行：小图 + 说明 + 操作 */
+.avatar-review-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2);
+  border-radius: var(--r-md);
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.avatar-review-row:hover {
+  background: var(--surface-2);
+}
+
+.avatar-review-row .link-btn {
+  margin-top: 4px;
+}
+
+/* 找回申请的来源留痕：IP 与设备原样完整展示，允许换行不裁切 */
+.recovery-source {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  word-break: break-all;
+}
+
+/* ── 表单分块：每项独立成块，块与块之间留出明显间隔 ── */
+
+.form-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  margin-top: var(--sp-4);
+}
+
+/*
+ * 选项组。
+ * .field 是 column flex，默认 stretch 会把 inline-flex 的分段控件拉满整行 ——
+ * 按钮只有几个却撑成一整条，看着就是「没做自适应」。这里明确收回自适应的宽度。
+ */
+.choice-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  align-self: flex-start;
+  max-width: 100%;
+}
+
+.choice-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px var(--sp-3);
+  border-radius: var(--r-full);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 12px;
+  white-space: nowrap;
+  transition:
+    background var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+.choice-chip:hover {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.choice-chip:active {
+  transform: scale(0.96);
+}
+
+.choice-chip[data-active='true'] {
+  background: var(--primary-soft);
+  border-color: color-mix(in srgb, var(--primary) 42%, transparent);
+  color: var(--primary-text);
+}
+
+/* ── 收件人选择器 ── */
+
+.pick-chosen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.pick-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px var(--sp-2) 3px 4px;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 12px;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.pick-chip:hover {
+  border-color: color-mix(in srgb, var(--danger) 50%, transparent);
+  color: var(--danger);
+}
+
+.pick-list {
+  max-height: 264px;
+  overflow-y: auto;
+  padding: var(--sp-1);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+}
+
+.pick-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-sm);
+  color: var(--text-muted);
+  font-size: 12px;
+  text-align: left;
+  transition:
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.pick-row:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+.pick-row[data-active='true'] {
+  background: var(--primary-soft);
+  color: var(--text);
+}
+
+.pick-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.pick-account {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pick-mark {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-left: auto;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border-strong);
+  color: transparent;
+}
+
+.pick-mark[data-active='true'] {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #fff;
+}
+
+/* 开关样式的选项：勾选框 + 一句说明 */
+.switch-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  margin-top: var(--sp-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+
+.switch-row:hover {
+  border-color: var(--border-strong);
+}
+
+.switch-row input {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.switch-row > span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+}
+
+.switch-row .faint {
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* 站内回复的发送条：左边待发人数，右边按钮 */
+.notify-send-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  padding-top: var(--sp-2);
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 举报人写的补充说明：靠底色凸出来一块，不用竖线（全站的分割线都在收） */
+.report-quote {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+  padding: var(--sp-3);
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--warning) 8%, transparent);
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+.report-quote > svg {
+  flex: none;
+  margin-top: 3px;
+  color: var(--warning);
+}
+
+.report-quote-label {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-faint);
+}
+
+/* 已忽略的处理记录：用中性色，不跟「已删除」一样红 */
+.admin-note-muted {
+  border-color: var(--border);
+  background: var(--surface-2);
+}
+
+.admin-ban-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: var(--sp-2);
+  padding: 3px var(--sp-2);
+  border-radius: var(--r-sm);
+  border: 1px solid color-mix(in srgb, var(--danger) 34%, transparent);
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.admin-inline-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+
+.admin-inline-form .input {
+  width: auto;
+  min-width: 160px;
+  padding: 7px var(--sp-3);
+  font-size: 12px;
+}
+
+.admin-inline-form .input-narrow {
+  min-width: 84px;
+  width: 84px;
+}
+
+/* ── 审核规则 ── */
+
+.read-only-note {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.read-only-note svg {
+  color: var(--primary-text);
+  flex: none;
+}
+
+.rule-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-5);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+
+.rule-toggle:hover {
+  border-color: var(--border-strong);
+}
+
+.rule-toggle[data-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.rule-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.rule-desc {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--text-faint);
+  line-height: 1.6;
+}
+
+.switch {
+  appearance: none;
+  position: relative;
+  flex: none;
+  width: 40px;
+  height: 22px;
+  margin: 0;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-3);
+  cursor: pointer;
+  transition: background var(--dur-base) var(--ease), border-color var(--dur-base) var(--ease);
+}
+
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--r-full);
+  background: var(--text-muted);
+  transition: transform var(--dur-base) var(--ease), background var(--dur-base) var(--ease);
+}
+
+.switch:checked {
+  background: color-mix(in srgb, var(--primary) 32%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 55%, transparent);
+}
+
+.switch:checked::after {
+  transform: translateX(18px);
+  background: var(--primary-text);
+}
+
+.switch:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* ── 操作日志 ── */
+
+.audit-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.audit-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-5);
+  font-size: 12px;
+}
+
+.audit-row:hover {
+  background: var(--surface-hover);
+}
+
+.audit-actor {
+  flex: none;
+  font-size: 12px;
+  color: var(--text);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.audit-target {
+  flex: none;
+  font-size: 11px;
+}
+
+.audit-detail {
+  min-width: 0;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.audit-time {
+  flex: none;
+  font-size: 11px;
+}
+
+/* ── 响应式 ── */
+
+@media (max-width: 1080px) {
+  .review-item,
+  .admin-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .review-actions,
+  .admin-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
+  .admin-search {
+    width: 100%;
+  }
+
+  .audit-row {
+    flex-wrap: wrap;
+  }
+
+  .audit-detail {
+    white-space: normal;
+    flex-basis: 100%;
+  }
+}

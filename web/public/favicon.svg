@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b2432" />
+      <stop offset="1" stop-color="#0e1116" />
+    </linearGradient>
+    <linearGradient id="wave" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#5b8def" />
+      <stop offset="0.55" stop-color="#3fb8af" />
+      <stop offset="1" stop-color="#8a8fe0" />
+    </linearGradient>
+    <linearGradient id="star" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d6b45c" />
+      <stop offset="1" stop-color="#d9a05b" />
+    </linearGradient>
+  </defs>
+
+  <rect width="64" height="64" rx="14" fill="url(#bg)" />
+  <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="13.25" fill="none" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1.5" />
+
+  <path
+    d="M12 40c4 0 4-7 8-7s4 7 8 7 4-7 8-7 4 7 8 7"
+    fill="none"
+    stroke="url(#wave)"
+    stroke-width="4"
+    stroke-linecap="round"
+  />
+  <path
+    d="M12 50c4 0 4-5 8-5s4 5 8 5 4-5 8-5 4 5 8 5"
+    fill="none"
+    stroke="url(#wave)"
+    stroke-width="3"
+    stroke-linecap="round"
+    stroke-opacity="0.5"
+  />
+
+  <path d="M32 12l2.9 6.6 7.1.7-5.4 4.8 1.6 7-6.2-3.7-6.2 3.7 1.6-7-5.4-4.8 7.1-.7z" fill="url(#star)" />
+  <circle cx="49" cy="19" r="1.9" fill="#d6ecff" fill-opacity="0.85" />
+  <circle cx="16" cy="24" r="1.4" fill="#d6ecff" fill-opacity="0.6" />
+</svg>

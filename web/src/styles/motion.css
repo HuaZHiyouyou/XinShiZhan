@@ -1,0 +1,233 @@
+/* ============================================================
+   动效层
+   ------------------------------------------------------------
+   四件事，全部只服务「让等待有交代、让操作有实感」：
+     1. 页面切换：进场位移 + 顶部真实进度条
+     2. 点击 / 悬停：按下内收、松开弹回
+     3. 展开收起：高度自适应过渡，不再生硬闪现
+     4. 数据加载：骨架屏 + 列表逐条浮入
+
+   分辨率与性能约定：
+     · 只动 transform / opacity，避免触发布局重排；
+     · 长列表的逐条延迟封顶（--i 由 JS 截到 8），不让第 40 条等两秒；
+     · 系统级「减弱动效」由 base.css 的全局兜底压制，这里不再重复。
+   ============================================================ */
+
+/* ── 1. 页面切换 ── */
+
+.page-enter {
+  animation: page-enter var(--dur-base) var(--ease) both;
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/*
+ * 顶部进度条：由真实请求驱动（见 store/progress.ts）。
+ * 只做不定量滑动，不假装一个精确百分比 —— 我们并不知道对面要多久。
+ */
+.route-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 80;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease);
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.route-bar[data-active='true'] {
+  opacity: 1;
+}
+
+.route-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--primary) 90%, transparent) 30%,
+    var(--teal) 50%,
+    color-mix(in srgb, var(--primary) 90%, transparent) 70%,
+    transparent 100%
+  );
+  background-size: 45% 100%;
+  background-repeat: no-repeat;
+  animation: route-sweep 1.15s var(--ease) infinite;
+}
+
+@keyframes route-sweep {
+  from {
+    background-position: -45% 0;
+  }
+  to {
+    background-position: 145% 0;
+  }
+}
+
+/* ── 2. 点击与悬停 ── */
+
+/* 按下时轻微内收：不需要回弹动画，松手即还原，手感比纯变色明确得多 */
+.btn:not(:disabled):active {
+  transform: scale(0.97);
+}
+
+.btn-icon:not(:disabled):active {
+  transform: scale(0.9);
+}
+
+.btn-icon {
+  transition:
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+.segmented button:active,
+.tag[role='button']:active {
+  transform: scale(0.96);
+}
+
+.rail-item:active,
+.admin-tab:active {
+  transform: scale(0.98);
+}
+
+.segmented button,
+.rail-item,
+.admin-tab {
+  transition:
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+/* ── 3. 展开与收起 ── */
+
+/*
+ * 用 grid-template-rows 的 0fr → 1fr 做高度过渡：
+ * 不需要预先知道内容高度，也不会像 max-height 那样把动画时间浪费在「无效高度」上。
+ */
+.collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows var(--dur-base) var(--ease),
+    opacity var(--dur-fast) var(--ease);
+}
+
+.collapse[data-open='true'] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.collapse > * {
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ── 4. 数据加载：骨架屏与逐条浮入 ── */
+
+/* 逐条浮入：--i 由 JS 给出并封顶，避免长列表尾部等待过久 */
+.stagger > * {
+  animation: fade-up var(--dur-base) var(--ease) both;
+  animation-delay: calc(var(--stagger-step, 35ms) * var(--i, 0));
+}
+
+/* 骨架屏里的文字行：宽度不写死，用百分比让它在不同宽度下都自然 */
+.sk-line {
+  height: 12px;
+  border-radius: var(--r-sm);
+}
+
+.sk-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-5);
+}
+
+/* 骨架屏的每一行靠间距分开，不画线 */
+.sk-row + .sk-row {
+  margin-top: var(--sp-2);
+}
+
+.sk-title {
+  height: 13px;
+  width: 34%;
+  min-width: 96px;
+  border-radius: var(--r-sm);
+}
+
+.sk-sub {
+  height: 10px;
+  width: 20%;
+  min-width: 64px;
+  border-radius: var(--r-sm);
+}
+
+.sk-body {
+  height: 12px;
+  width: 100%;
+  border-radius: var(--r-sm);
+}
+
+.sk-body-short {
+  width: 64%;
+}
+
+.sk-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-full);
+  flex: none;
+}
+
+.sk-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-4) var(--sp-5);
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.sk-stat-value {
+  height: 22px;
+  width: 52px;
+  border-radius: var(--r-sm);
+}
+
+.sk-stat-label {
+  height: 10px;
+  width: 76px;
+  border-radius: var(--r-sm);
+}
+
+.sk-grid {
+  display: grid;
+  gap: var(--sp-3);
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+/* 页面级加载容器：切换页面时不要闪一下空白，留一点呼吸 */
+.sk-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
